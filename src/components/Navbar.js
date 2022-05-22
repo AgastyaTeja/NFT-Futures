@@ -21,7 +21,7 @@ const NavbarComp = () =>{
             package: WalletConnectProvider,
             options: { 
               // infuraId: 
-              infuraId: '9282b715ab934b08bc2e6eacf20e889f'
+              infuraId: 
             },
           },
         },
