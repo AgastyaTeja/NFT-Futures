@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
 import 'easymde/dist/easymde.min.css'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
-import { AccountContext } from '../context.js'
+// import { AccountContext } from '../context.js'
 
 
 const NavbarComp = () =>{
@@ -21,7 +21,7 @@ const NavbarComp = () =>{
             package: WalletConnectProvider,
             options: { 
               // infuraId: 
-              infuraId: [Fill infura id]
+              infuraId: 'Add Infura ID'
             },
           },
         },
