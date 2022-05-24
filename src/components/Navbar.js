@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import { Navbar, NavDropdown, Nav, Container } from 'react-bootstrap';
 import { css } from '@emotion/css'
 import { ethers } from 'ethers'
@@ -9,9 +9,17 @@ import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 // import { AccountContext } from '../context.js'
 
-
 const NavbarComp = () =>{
-    const [account, setAccount] = useState(null)
+    let navigate = useNavigate(); 
+    const storedAccount = localStorage.getItem('account');
+    
+    const [account, setAccount] = useState(
+      (storedAccount) ? storedAccount : null
+    );
+    useEffect(() => {
+      window.localStorage.setItem('account', String(account));
+    }, [account]);
+    
     async function getWeb3Modal() {
       const web3Modal = new Web3Modal({
         network: 'mainnet',
@@ -21,7 +29,7 @@ const NavbarComp = () =>{
             package: WalletConnectProvider,
             options: { 
               // infuraId: 
-              infuraId: 'Add Infura ID'
+              infuraId: '9282b715ab934b08bc2e6eacf20e889f'
             },
           },
         },
@@ -34,14 +42,25 @@ const NavbarComp = () =>{
         const connection = await web3Modal.connect()
         const provider = new ethers.providers.Web3Provider(connection)
         const accounts = await provider.listAccounts()
-        setAccount(accounts[0])
-        console.log(accounts)  
-        
-
+        setAccount(accounts[0])               
       } catch (err) {
         console.log('error:', err)
       }
     }
+    async function disconnect(){      
+        try{
+          const web3Modal = await getWeb3Modal()
+          await web3Modal.clearCachedProvider();
+          setAccount(null);    
+          let path = `/`; 
+          navigate(path);                
+        }
+        catch (err) {
+          console.log('error:', err)
+        }    
+        return           
+    }
+
 
     return(
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -61,9 +80,13 @@ const NavbarComp = () =>{
             <Nav.Link href="/history">{account && <p>History</p>}</Nav.Link>
           </Nav>                   
           {
-            account && <p className={accountInfo}>{account}</p>
-          }          
-
+            account && <p className={accountInfo}>{account}</p> && (          
+              <Nav>
+              {/* <Nav.Link href="/login">Login</Nav.Link> */}
+              <button onClick={disconnect}>Disconnect Wallet</button>  
+              </Nav>)
+          }   
+               
         </Navbar.Collapse>
         </Container>
       </Navbar>
@@ -95,7 +118,7 @@ const accountInfo = css`
   width: 100%;
   display: flex;
   flex: 1;
-  justify-content: flex-end;
+  /*justify-content: flex-;*/
   font-size: 14px;
   color: white;
 `
