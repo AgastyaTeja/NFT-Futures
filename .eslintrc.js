@@ -8,7 +8,14 @@ module.exports = {
   extends: [
   ],
   parserOptions: {
-    ecmaVersion: 12,
+    parser: 'babel-eslint',
+    ecmaVersion: 2020,
+    sourceType: "module",
+    ecmaFeatures: {
+            "jsx": true,
+            "modules": true,
+            "experimentalObjectRestSpread": true
+        }
   },
   overrides: [
     {
