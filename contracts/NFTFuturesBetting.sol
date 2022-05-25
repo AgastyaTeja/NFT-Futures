@@ -1,27 +1,31 @@
 //SPDX-License-Identifier: MIT
-pragma solidity >=0.8.13;
- 
-import '@chainlink/contracts/src/v0.8/ChainlinkClient.sol';
-import '@chainlink/contracts/src/v0.8/ConfirmedOwner.sol';
+pragma solidity >=0.8.4;
 
-import 'hardhat/console.sol';
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+import "hardhat/console.sol";
 
 /**
  * Request testnet LINK and ETH here: https://faucets.chain.link/
  * Find information on LINK Token Contracts and get the latest ETH and LINK faucets here: https://docs.chain.link/docs/link-token-contracts/
  */
 
-contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
+contract NFTFuturesBetting is ChainlinkClient {
 
     using Chainlink for Chainlink.Request;
+    using Counters for Counters.Counter;
+
     event RequestVolume(bytes32 indexed requestId, uint256 volume);
+    address payable private owner;
 
     bytes32 private jobId;
     uint256 private fee;
+    Counters.Counter private betCounter;
+    uint private minEthBalRequired = 10000000000000000; // 0.1 ETH
 
-    uint private min_eth_bal_required = 10000000000000000; // 0.1 ETH
-
-    // enum of bet status 
+    // enum of bet status
     enum BetStatus {
        AVAILABLE,
        RUNNING,
@@ -29,35 +33,37 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
        FAILED
     }
 
-    /** map betId => corresponding bet 
-    For efficiency reasons Solidity/EVM does not store iterative keys, so maintain another array for keys to 
-    traverse through the mapping bets*/
+    /**
+    map betId => corresponding bet
+    For efficiency reasons Solidity/EVM does not store iterative keys, so maintain another array for keys to
+    traverse through the mapping bets
+    */
     mapping(uint => Bet) private bets;
     uint[] private betIds;
-    
-    // map nftId => corresponding all betIds where nftId = nftCollection_property 
+
+    // map nftId => corresponding all betIds where nftId = nftCollection_property
     mapping(string => uint[]) private nftToBets;
 
     // map reqId(chainlink) => betId
     mapping(bytes32 => uint) private chainlinkReqToBetId;
 
     struct Bet {
-        // refer: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol 
-        uint betId; 
+        // refer: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol
+        uint betId;
         string nftCollection; // e.g., "Dooplicator"
         string property; // e..g, "floor_price, "volume_traded"
         Bid userBid1; // Note: When I made it array of userBids, there was compile error that memory cannot be stored into storage
-        Bid userBid2; 
-        BetStatus status; 
-        uint startTime; 
+        Bid userBid2;
+        BetStatus status;
+        uint startTime;
         uint endTime;
         uint closingPropertyValue;
         address winner;
     }
 
     struct Bid {
-        address user; 
-        uint prediction; 
+        address user;
+        uint prediction;
     }
 
     /**
@@ -66,28 +72,31 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
      * Kovan Testnet details:
      * Link Token: 0xa36085F69e2889c224210F603D836748e7dC0088 0xa36085F69e2889c224210F603D836748e7dC0088
      * Oracle: 0x74EcC8Bdeb76F2C6760eD2dc8A46ca5e581fA656 (Chainlink DevRel)
-     * jobId: ca98366cc7314957b8c012c72f05aeeb 
+     * jobId: ca98366cc7314957b8c012c72f05aeeb
      *
      */
-    constructor() payable ConfirmedOwner(msg.sender) {
+    constructor() payable  {
         setChainlinkToken(0xa36085F69e2889c224210F603D836748e7dC0088);
         setChainlinkOracle(0x74EcC8Bdeb76F2C6760eD2dc8A46ca5e581fA656);
         jobId = 'ca98366cc7314957b8c012c72f05aeeb';
         fee = (1 * LINK_DIVISIBILITY) / 10; // 0,1 * 10**18 (Varies by network and job)
+        owner = payable(msg.sender);
     }
 
     function deposit() public payable {}
-    receive() external payable {}
+    receive() external payable {
+         console.log(msg.sender, msg.value);
+    }
 
     /**
-        UI calls this function to update itself with all the bets that are available. 
-        This function will return two associative arrays, 
+        UI calls this function to update itself with all the bets that are available.
+        This function will return two associative arrays,
         1st array contains list of uints which represent betIDs
-        2nd array contains list of Bet which represent bets. 
+        2nd array contains list of Bet which represent bets.
     */
     function getAllBets() public view returns (uint[] memory betsKeys, Bet[] memory betsValues) {
-        uint len = betIds.length; 
-        
+        uint len = betIds.length;
+
         uint[] memory _betsKeys = new uint[](len);
         Bet[] memory _betsValues = new Bet[](len);
 
@@ -104,20 +113,20 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
     function printABet(uint index) public view {
         Bet memory bet = bets[betIds[index]];
 
-        // uint betId; 
+        // uint betId;
         // string nftCollection; // e.g., "Dooplicator"
         // string property; // e..g, "floor_price, "volume_traded"
         // Bid userBid1; // When I made it array of userBids, there was compile error that memory cannot be stored into storage
-        // Bid userBid2; 
-        // BetStatus status; 
-        // uint startTime; 
+        // Bid userBid2;
+        // BetStatus status;
+        // uint startTime;
         // uint endTime;
         // uint closingPropertyValue;
         // address winner;
 
-        console.log(bet.betId, bet.winner, bet.userBid1.user); 
+        console.log(bet.betId, bet.winner, bet.userBid1.user);
         console.log(bet.userBid2.user, bet.nftCollection, bet.property);
-        
+
     }
 
     // All bets of the user
@@ -128,7 +137,7 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
         for(uint i=0; i<betIds.length; ++i){
             Bet memory bet = bets[betIds[i]];
             if(bet.userBid1.user == msg.sender || bet.userBid2.user == msg.sender){
-                allBetsOfUser[allBetsOfUser.length] = bet; 
+                allBetsOfUser[allBetsOfUser.length] = bet;
             }
         }
 
@@ -160,7 +169,7 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
     }
 
     function _getBet(string memory nftCollection, string memory property, Bid memory bid) private returns(Bet memory) {
-        require(msg.value >= min_eth_bal_required, "Not sufficient ETH in your wallet :(");
+        //require(msg.value >= minEthBalRequired, "Not sufficient ETH in your wallet :(");
 
         // Check if bet already has two users in it, error out, ask to wait for anohter 60m
         uint[] memory nftBets = nftToBets[_getNFTId(nftCollection, property)];
@@ -173,9 +182,9 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
             return _createNewBet(nftCollection, property, bid);
         }
 
-        // Check if user already had put bet on this nftCollection 
+        // Check if user already had put bet on this nftCollection
         if (latestBet.status == BetStatus.AVAILABLE) {
-            require (latestBet.userBid1.user != msg.sender, "User already placed bid"); 
+            require (latestBet.userBid1.user != msg.sender, "User already placed bid");
             latestBet.userBid2 = bid;
         }
 
@@ -193,10 +202,10 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
 
         console.log(bet.userBid1.user, bet.userBid2.user, bet.nftCollection, bet.property);
 
-        // tansfer money to contract address 
-        // If msg.data is empty => receiving address should have a receive() defined to get ETH, 
-        //otherwise it does a Falllback() 
-        (bool success,) = address(this).call{value: min_eth_bal_required}("");
+        // tansfer money to contract address
+        // If msg.data is empty => receiving address should have a receive() defined to get ETH,
+        //otherwise it does a Falllback()
+        (bool success,) = address(this).call{value: msg.value}("");
         require(success, "Failed to send Ether!");
 
         // If userBid2 exists, then bet is full, go run runBet function
@@ -233,7 +242,7 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
         } else {
             bet.winner = bet.userBid2.user;
         }
-        
+
         bet.status = BetStatus.COMPLETED;
         console.log(bet.winner, bet.closingPropertyValue, prediction1, prediction2);
     }
@@ -306,7 +315,7 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
         } else {
             bet.winner = bet.userBid2.user;
         }
-        (bool success,) = address(bet.winner).call{value: 2*min_eth_bal_required}("");
+        (bool success,) = address(bet.winner).call{value: 2*minEthBalRequired}("");
         if (success) {
             bet.status = BetStatus.COMPLETED;
         } else {
@@ -317,7 +326,7 @@ contract NFTFuturesBetting is ChainlinkClient, ConfirmedOwner {
     /**
      * Allow withdraw of Link tokens from the contract
      */
-    function withdrawLink() public onlyOwner {
+    function withdrawLink() public  {
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         require(link.transfer(msg.sender, link.balanceOf(address(this))), 'Unable to transfer');
     }
