@@ -1,40 +1,36 @@
+require("@nomiclabs/hardhat-waffle");
 require("dotenv").config();
 
-require("@nomiclabs/hardhat-etherscan");
-require("@nomiclabs/hardhat-waffle");
-require("hardhat-gas-reporter");
-require("solidity-coverage");
+// Possible network values
+const TEST_NETWORK = "TEST_NETWORK";
+const LOCAL_NETWORK = "LOCAL_NETWORK";
+// By default network is set to local, change it to TEST_NETWORK to make a switch
+const NETWORK = TEST_NETWORK;
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
+const INFURA_API_KEY = process.env.INFURA_ID
 
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+console.log(ALCHEMY_API_KEY)
+console.log(WALLET_PRIVATE_KEY)
 
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
-module.exports = {
-  solidity: "0.8.4",
-  networks: {
-    ropsten: {
-      url: process.env.ROPSTEN_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+let networks = {};
+if (NETWORK == TEST_NETWORK) {  
+  networks = {
+    rinkeby: {      
+      // url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: [`0x${WALLET_PRIVATE_KEY}`]
     },
-  },
-  gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
-  },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-  },
+    kovan: {
+      url: `https://kovan.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: [`0x${WALLET_PRIVATE_KEY}`]
+    }
+  }
+}
+// console.log(networks);
+module.exports = {
+  solidity: "0.8.1",
+  networks: networks
 };
