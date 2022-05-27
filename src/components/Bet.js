@@ -4,7 +4,7 @@ import punk from "../Assets/punks.png"
 import bayc from "../Assets/bayc.png"
 import doodles from "../Assets/doodles.jpg"
 import  {ethers} from 'ethers';
-import  Contract  from '../../src/NFTFuturesBetting.json';
+import  Contract  from '../NFTFuturesBetting.json';
 
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
