@@ -9,7 +9,7 @@ import  Contract  from '../../src/NFTFuturesBetting.json';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const address = '0xC2AC42D8b37E2fDaefE5714CB777A36516C049a9';
+const address = '0x4aad781F93B03cA3681411F44b39A6BAF423F9F1';
 const contract = new ethers.Contract(address, Contract.abi, signer);
 
 
