@@ -4,27 +4,20 @@ import punk from "../Assets/punks.png"
 import bayc from "../Assets/bayc.png"
 import doodles from "../Assets/doodles.jpg"
 import  {ethers} from 'ethers';
-import  Contract  from '../NFTFuturesBetting.json';
+import  Contract  from '../../src/NFTFuturesBetting.json';
 
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const address = '0xC63b12498601CB76A5a313907feFEe30cEd153FD';
+const address = '0xC2AC42D8b37E2fDaefE5714CB777A36516C049a9';
 const contract = new ethers.Contract(address, Contract.abi, signer);
 
-const main = async () => {
-    try{
-        await contract.placeABid("test-collection", "floor_price", 1^18, {value:100000})
-        console.log("Placed a bid")
-    }catch (error){
-        console.log("Error in contract integration", error);
-    }
-}
 
 const Bet = (props) =>{
 
-    const [form, setForm] = useState({"fee":'0.1',"collection": "test"})
+    const [form, setForm] = useState({"fee":'0.1',"collection": "opensea-creature", "bettingOn": "floor_price"})
     const [errors, setErrors] = useState({})
+    const [status, setStatus] = useState(false)
 
     const setField = (field, value) => {
         setForm(
@@ -38,6 +31,18 @@ const Bet = (props) =>{
                 ...errors,
                 [field]:null
             })
+        }
+    }
+
+    const main = async (form) => {
+        try{
+            console.log(form, "--");
+            await contract.placeABid(form.collection, form.bettingOn, form.prediction, {value:1^17})
+            console.log("Placed a bid")
+            setStatus(true)
+
+        }catch (error){
+            console.log("Error in contract integration", error);
         }
     }
 
@@ -57,8 +62,7 @@ const Bet = (props) =>{
 
     const handleSubmit = e => {
         e.preventDefault()
-        console.log(form, "--");
-        main()
+        main(form)
     }
     return (
         <div>
@@ -104,9 +108,12 @@ const Bet = (props) =>{
                             </Form.Group>
                         </fieldset>
                         <div style={{display: "flex", alignItems:"center", justifyContent: "center"}}>
-                                <Button type="submit" onClick={handleSubmit}>Submit</Button>
-                                
+                                <Button type="submit" onClick={handleSubmit}>Submit</Button> 
                         </div>
+                        {
+                            status?<p>Bid placed Successfully !</p>:null
+                        }
+                        
                     </Form>
                 </div>
             </div>

@@ -16,7 +16,7 @@ contract NFTFuturesBetting is ChainlinkClient {
 
     using Chainlink for Chainlink.Request;
     using Counters for Counters.Counter;
-
+    string[] public result;
     event RequestVolume(bytes32 indexed requestId, uint256 volume);
 
     bytes32 private jobId;
@@ -42,7 +42,8 @@ contract NFTFuturesBetting is ChainlinkClient {
     uint[] private betIds;
 
     // map nftId => corresponding all betIds where nftId = nftCollection_property
-    mapping(string => uint[]) private nftToBets;
+    // mapping(string => uint[]) private nftToBets;
+    mapping(string => uint[]) public nftToBets;
 
     // map reqId(chainlink) => betId
     mapping(bytes32 => uint) private chainlinkReqToBetId;
@@ -127,13 +128,15 @@ contract NFTFuturesBetting is ChainlinkClient {
 
     // All bets of the user
     function getAllBetsOfTheUser() public view returns (Bet[] memory) {
-        Bet[] memory allBetsOfUser;
-
+        uint n = betIds.length;
+        Bet[] memory allBetsOfUser = new Bet[](n);
+        uint index;
         // Iterate on bets and add those with either user1 == sender or user2 == sender
-        for(uint i=0; i<betIds.length; ++i){
+
+        for(uint i=0; i< n; ++i){
             Bet memory bet = bets[betIds[i]];
             if(bet.userBid1.user == msg.sender || bet.userBid2.user == msg.sender){
-                allBetsOfUser[allBetsOfUser.length] = bet;
+                allBetsOfUser[index++] = bet;
             }
         }
 
@@ -165,7 +168,7 @@ contract NFTFuturesBetting is ChainlinkClient {
     }
 
     function _getBet(string memory nftCollection, string memory property, Bid memory bid) private returns(Bet memory) {
-        require(msg.value >= minEthBalRequired, "Not sufficient ETH in your wallet :(");
+        // require(msg.value >= minEthBalRequired, "Not sufficient ETH in your wallet :(");
 
         // Check if bet already has two users in it, error out, ask to wait for anohter 60m
         uint[] memory nftBets = nftToBets[_getNFTId(nftCollection, property)];
@@ -212,40 +215,50 @@ contract NFTFuturesBetting is ChainlinkClient {
             console.log("Running the bet");
             console.log(bet.userBid1.user, bet.userBid2.user, bet.nftCollection, bet.property);
             _runBet(bet);
-            //_runBetOnlyForTesting(); Note: Introduced for testing
+            // _runBetOnlyForTesting(); //Note: Introduced for testing
         }        
         console.log("Place a bid start for user:", msg.sender, ",", string(abi.encodePacked(nftCollection, property, prediction)));
     }
 
-    function _runBet(Bet memory bet) private {
+    function _runBet(Bet memory bet) public payable {
         console.log("In run bet");
         bytes32 reqId = _requestCollectionProperty(bet.nftCollection, bet.property);
+        // result.push( "after chainlink call";
         console.log("Request ID, betId", bet.betId, string(abi.encodePacked(reqId)));
-        chainlinkReqToBetId[reqId] = bet.betId;
+        chainlinkReqToBetId[reqId] = bet.betId;       
     }
 
     // Note: Introduced for testing
-    function _runBetOnlyForTesting() private view {
+    function _runBetOnlyForTesting() public payable{
         getWinner();
     }
 
     // Note: Introduced for testing
-    function getWinner() private view {
+    function getWinner() public payable {
         uint propertyValue = 5400;
         uint betId = 0;
-        Bet memory bet = bets[betId];
+        Bet storage bet = bets[betId];
         bet.closingPropertyValue = propertyValue;
         uint prediction1 = bet.userBid1.prediction;
         uint prediction2 = bet.userBid2.prediction;
 
-        if (abs(int(prediction1 - propertyValue)) <= abs(int(prediction2 - propertyValue))) {
+        if (abs((int(prediction1) - int(propertyValue))) <= abs((int(prediction2) - int(propertyValue)))) {
+        // if (abs(int(prediction1 - propertyValue)) <= abs(int(prediction2 - propertyValue))) {
             bet.winner = bet.userBid1.user;
         } else {
             bet.winner = bet.userBid2.user;
         }
-
-        bet.status = BetStatus.COMPLETED;
+        
         console.log(bet.winner, bet.closingPropertyValue, prediction1, prediction2);
+        (bool success,) = payable(address(bet.winner)).call{value: 2*minEthBalRequired}("");
+        console.log("Sent money to winner", bet.winner);
+        if (success) {
+            bet.status = BetStatus.COMPLETED;
+            
+        } else {
+           bet.status = BetStatus.FAILED;
+        }
+        console.log("Bet status",string(abi.encodePacked(bet.status)));
     }
 
       /*
@@ -254,26 +267,19 @@ contract NFTFuturesBetting is ChainlinkClient {
      */
     function _requestCollectionProperty(string memory nftCollection, string memory property) internal returns (bytes32 requestId) {
         console.log("In request collection property");
+        result.push( "in chainlink call");
         Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
-
-        // Set the URL to perform the GET request on
-        //req.add('get', 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD');
-        console.log("Requesting opensea");
-        req.add("get", string(abi.encodePacked("https://testnets-api.opensea.io/api/v1/collection/", nftCollection, "/stats/")));
-        console.log("Added request");
-
-        // request.add("path", "RAW.ETH.USD.VOLUME24HOUR"); // Chainlink nodes prior to 1.0.0 support this format
-        //req.add('path', 'RAW,ETH,USD,VOLUME24HOUR'); // Chainlink nodes 1.0.0 and later support this format
-        req.add("path", string(abi.encodePacked("stats", property)));
-        // req.add("path", string(abi.encodePacked(property)));
-        console.log("Added path");
-        // Multiply the result by 1000000000000000000 to remove decimals
+        req.add("get", string(abi.encodePacked("https://testnets-api.opensea.io/api/v1/collection/", nftCollection, "/stats/?format=json")));
+        // req.add("path", string(abi.encodePacked("stats", property)));
+        req.add("path","stats,floor_price");
         int256 timesAmount = 10**18;
-        req.addInt('times', timesAmount);
+        req.addInt("times", timesAmount);
+        result.push( "Amount");
         console.log("converted the amount");
         // console.log("Timesamout",string(timesAmount));
 
         // Sends the request
+        
         return sendChainlinkRequest(req, fee);
     }
 
@@ -285,30 +291,36 @@ contract NFTFuturesBetting is ChainlinkClient {
      * Receive the response in the form of uint256
      */
     function fulfill(bytes32 _requestId, uint256 propertyValue) public recordChainlinkFulfillment(_requestId) {
-        console.log("In Fulfill");
+        // console.log("In Fulfill");
         uint betId = chainlinkReqToBetId[_requestId];
-        Bet memory bet = bets[betId];
+        Bet storage bet = bets[betId];
         bet.closingPropertyValue = propertyValue;
         uint prediction1 = bet.userBid1.prediction;
         uint prediction2 = bet.userBid2.prediction;
         console.log("BetID, Predictions",string(abi.encodePacked(betId,prediction1, prediction2)) );
-
-        if (abs(int(prediction1 - propertyValue)) <= abs(int(prediction2 - propertyValue))) {
+        result.push( "deciding winner");
+        if (abs((int(prediction1) - int(propertyValue))) <= abs((int(prediction2) - int(propertyValue)))) {
+        // if (abs(int(prediction1 - propertyValue)) <= abs(int(prediction2 - propertyValue))) {
             bet.winner = bet.userBid1.user;
+            result.push("user1 is the winner");
             console.log("User 1 is the winner");
         } else {
             bet.winner = bet.userBid2.user;
+            result.push("user2 is the winner");
             console.log("User 2 is the winner");
         }
-        (bool success,) = address(bet.winner).call{value: 2*minEthBalRequired}("");
+        result.push( "sending money to winner");
+        (bool success,) = payable(address(bet.winner)).call{value: 2*minEthBalRequired}("");
         console.log("Sent money to winner", bet.winner);
+        result.push( "sent money to winner");
         if (success) {
             bet.status = BetStatus.COMPLETED;
             
         } else {
            bet.status = BetStatus.FAILED;
         }
-        console.log("Bet status",string(abi.encodePacked(bet.status)));
+        console.log("Bet status",string(abi.encodePacked(bet.status)));        
+        result.push( "fulfill end");
     }
 
     /*
@@ -319,13 +331,23 @@ contract NFTFuturesBetting is ChainlinkClient {
         require(link.transfer(msg.sender, link.balanceOf(address(this))), 'Unable to transfer');
     }
 
-    /* TODO
-    function noOfUsersInABet(string nftcollection, string property) public returns(uint) {
-        // Use nftToBets mapping + _getNFTIds function
+    /* TODO */
+    function noOfUsersInABet(string calldata nftcollection) public view returns(uint) {
+        return nftToBets[nftcollection].length;
     }
 
-    function onGoingBets() public returns() {
+    function onGoingBets() public view returns(Bet[] memory) {
+        uint n = betIds.length;      
+        Bet[] memory _ongoingBets = new Bet[](n);
+        uint index;
+
+        for(uint i=0; i< n; ++i){
+            Bet memory bet = bets[betIds[i]];
+            if(bet.status == BetStatus.AVAILABLE){
+                _ongoingBets[index++] = bet;
+            }
+        }
+        return _ongoingBets;
     }
-    */
 
 }
