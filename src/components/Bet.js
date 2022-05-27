@@ -1,11 +1,46 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Table, Container, Button, Form } from 'react-bootstrap';
 import punk from "../Assets/punks.png"
 import bayc from "../Assets/bayc.png"
 import doodles from "../Assets/doodles.jpg"
+import  {ethers} from 'ethers';
+import  Contract  from '../NFTFuturesBetting.json';
+
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
+const address = '0xC63b12498601CB76A5a313907feFEe30cEd153FD';
+const contract = new ethers.Contract(address, Contract.abi, signer);
+
+const main = async () => {
+    try{
+        await contract.placeABid("test-collection", "floor_price", 1^18, {value:100000})
+        console.log("Placed a bid")
+    }catch (error){
+        console.log("Error in contract integration", error);
+    }
+}
 
 const Bet = (props) =>{
-    console.log(props)
+
+    const [form, setForm] = useState({"fee":'0.1',"collection": "test"})
+    const [errors, setErrors] = useState({})
+
+    const setField = (field, value) => {
+        setForm(
+            {
+                ...form,
+                [field]:value
+            }
+        )
+        if(!!errors[field]){
+            setErrors({
+                ...errors,
+                [field]:null
+            })
+        }
+    }
+
     let image = ""
     let text = ""
 
@@ -20,6 +55,11 @@ const Bet = (props) =>{
         text = "Doodles";
     }
 
+    const handleSubmit = e => {
+        e.preventDefault()
+        console.log(form, "--");
+        main()
+    }
     return (
         <div>
             <div style={{display: "flex", axlignItems:"center", justifyContent: "center"}} className="mt-5 flex-row">
@@ -52,7 +92,10 @@ const Bet = (props) =>{
                     <Form column='sm'>
                             <Form.Group className="mb-3">
                             <Form.Label htmlFor="textInput">Your Prediction</Form.Label>
-                            <Form.Control type="text" id = "textInput" placeholder="Floor Price in ETH" />
+                            <Form.Control type="text" id = "textInput" placeholder="Floor Price in ETH" onChange={e => setField('prediction', e.target.value)} value={form.value} isInvalid={!!errors.dob}/>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.prediction}
+                            </Form.Control.Feedback>
                             </Form.Group>
                         <fieldset disabled>
                             <Form.Group className="mb-3">
@@ -61,7 +104,7 @@ const Bet = (props) =>{
                             </Form.Group>
                         </fieldset>
                         <div style={{display: "flex", alignItems:"center", justifyContent: "center"}}>
-                                <Button type="submit">Submit</Button>
+                                <Button type="submit" onClick={handleSubmit}>Submit</Button>
                                 
                         </div>
                     </Form>

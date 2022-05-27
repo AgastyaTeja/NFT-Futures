@@ -28,6 +28,6 @@
     "./typechain"
   ],
   "files": [
-    "./hardhat.config.ts"
+    "./hardhat.config.js"
   ]
 }

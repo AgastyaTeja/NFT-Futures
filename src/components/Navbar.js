@@ -8,7 +8,9 @@ import 'easymde/dist/easymde.min.css'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 // import { AccountContext } from '../context.js'
-
+require("dotenv").config();
+const INFURA_ID = process.env.INFURA_ID;
+console.log("Infura id",INFURA_ID)
 const NavbarComp = () =>{
     let navigate = useNavigate(); 
     const storedAccount = localStorage.getItem('account');
@@ -29,7 +31,7 @@ const NavbarComp = () =>{
             package: WalletConnectProvider,
             options: { 
               // infuraId: 
-              infuraId: '9282b715ab934b08bc2e6eacf20e889f'
+              infuraId: INFURA_ID
             },
           },
         },
