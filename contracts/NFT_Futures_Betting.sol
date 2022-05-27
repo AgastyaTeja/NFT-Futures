@@ -165,7 +165,7 @@ contract NFTFuturesBetting is ChainlinkClient {
     }
 
     function _getBet(string memory nftCollection, string memory property, Bid memory bid) private returns(Bet memory) {
-        // require(msg.value >= minEthBalRequired, "Not sufficient ETH in your wallet :(");
+        require(msg.value >= minEthBalRequired, "Not sufficient ETH in your wallet :(");
 
         // Check if bet already has two users in it, error out, ask to wait for anohter 60m
         uint[] memory nftBets = nftToBets[_getNFTId(nftCollection, property)];
@@ -182,6 +182,7 @@ contract NFTFuturesBetting is ChainlinkClient {
         if (latestBet.status == BetStatus.AVAILABLE) {
             require (latestBet.userBid1.user != msg.sender, "User already placed bid");
             latestBet.userBid2 = bid;
+            bets[nftBets[nftBets.length - 1]] = latestBet;
         }
 
         require(latestBet.status != BetStatus.RUNNING, "Maximum users exceeded error");
@@ -260,35 +261,11 @@ contract NFTFuturesBetting is ChainlinkClient {
         console.log("Requesting opensea");
         req.add("get", string(abi.encodePacked("https://testnets-api.opensea.io/api/v1/collection/", nftCollection, "/stats/")));
         console.log("Added request");
-        //opensea-creature/stats/ are returned as :
-        //{
-        //     "stats": {
-        //         "one_day_volume": 0.0,
-        //         "one_day_change": 0.0,
-        //         "one_day_sales": 0.0,
-        //         "one_day_average_price": 0.0,
-        //         "seven_day_volume": 0.0,
-        //         "seven_day_change": 0.0,
-        //         "seven_day_sales": 0.0,
-        //         "seven_day_average_price": 0.0,
-        //         "thirty_day_volume": 0.0,
-        //         "thirty_day_change": 0.0,
-        //         "thirty_dy_sales": 0.0,
-        //         "thirty_day_average_price": 0.0,
-        //         "total_volume": 1.4000000000000001,
-        //         "total_sales": 9.0,
-        //         "total_supply": 53.0,
-        //         "count": 53.0,
-        //         "num_owners": 28,
-        //         "average_price": 0.15555555555555556,
-        //         "num_reports": 1,
-        //         "market_cap": 0.0,
-        //         "floor_price": 0.0099
-        //     }
-        // }
+
         // request.add("path", "RAW.ETH.USD.VOLUME24HOUR"); // Chainlink nodes prior to 1.0.0 support this format
         //req.add('path', 'RAW,ETH,USD,VOLUME24HOUR'); // Chainlink nodes 1.0.0 and later support this format
-        req.add("path", string(abi.encodePacked("stats,", property)));
+        req.add("path", string(abi.encodePacked("stats", property)));
+        // req.add("path", string(abi.encodePacked(property)));
         console.log("Added path");
         // Multiply the result by 1000000000000000000 to remove decimals
         int256 timesAmount = 10**18;
