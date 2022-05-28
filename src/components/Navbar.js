@@ -67,13 +67,13 @@ const NavbarComp = () =>{
     return(
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
-        <Navbar.Brand href="#home">NFT-Futures</Navbar.Brand>
+        <Navbar.Brand href="/">NFT-Futures</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
 
           <Nav className="me-auto d-flex align-items-center mt-3">
-            <Nav.Link href="/upcomingbets">{<p style={{fontSize: '150px !important' }}> Upcoming Bets </p>}</Nav.Link>
-            <Nav.Link href="/history">{<p style={{fontSize: '150px !important' }}>History</p>}</Nav.Link>
+            {account ? <Nav.Link href="/upcomingbets">{<p>Upcoming Bets </p>}</Nav.Link> : <Nav.Link href="/upcomingbets" disabled>{<p>Upcoming Bets </p>}</Nav.Link>}
+            {account ? <Nav.Link href="/history">{<p>History</p>}</Nav.Link> : <Nav.Link href="/history" disabled>{<p>History</p>}</Nav.Link>}
           </Nav>  
           {
             !account && (          
