@@ -33,7 +33,6 @@ const History = () => {
               <th>Volume</th>
               <th>Unique Users</th>
               <th>Total Bets</th>
-              <th>Bet</th>
             </tr>
           </thead>
           <tbody>
@@ -47,45 +46,20 @@ const History = () => {
               <td>908.1k eth</td>
               <td>5.2k</td>
               <td>3</td>
-              <td>
-                <Button
-                  variant="secondary"
-                  className="align-middle"
-                  onClick={(event) => (window.location.href = "/betPunks")}
-                >
-                  Place a bet
-                </Button>{" "}
-              </td>
             </tr>
-            {
-                history.forEach(bet => {
-                         <tr>
-                           <td>
-                             {" "}
-                             <img
-                               src={punk}
-                               style={{ height: "100px", width: "100px" }}
-                             />
-                           </td>
-                           <td>bet[1]</td>
-                           <td>bet[2]</td>
-                           <td></td>
-                           <td>5.2k</td>
-                           <td>3</td>
-                           <td>
-                             <Button
-                               variant="secondary"
-                               className="align-middle"
-                               onClick={(event) =>
-                                 (window.location.href = "/betPunks")
-                               }
-                             >
-                               Place a bet
-                             </Button>{" "}
-                           </td>
-                         </tr>;
-                })
-            }
+            {history.map((bet) => (
+              <tr>
+                <td>
+                  {" "}
+                  <img src={punk} style={{ height: "100px", width: "100px" }} />
+                </td>
+                <td>{bet[1]}</td>
+                <td>{bet[3]['_hex']}</td>
+                <td>908.1k eth</td>
+                <td>5.2k</td>
+                <td>bet[3]</td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </Container>
