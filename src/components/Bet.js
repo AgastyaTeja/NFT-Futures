@@ -37,7 +37,7 @@ const Bet = (props) =>{
     const main = async (form) => {
         try{
             console.log(form, "--");
-            await contract.placeABid(form.collection, form.bettingOn, form.prediction, {value:1^17})
+            await contract.placeABid(form.collection, form.bettingOn, form.prediction, {value:"100000000000000000"})
             console.log("Placed a bid")
             setStatus(true)
 
@@ -111,7 +111,7 @@ const Bet = (props) =>{
                                 <Button type="submit" onClick={handleSubmit}>Submit</Button> 
                         </div>
                         {
-                            status?<p>Bid placed Successfully !</p>:null
+                            status?<p style={{textAlign: "center"}} className="text-success mt-2">Bid placed Successfully !</p>:null
                         }
                         
                     </Form>
