@@ -22,9 +22,7 @@ const main = async (form) => {
 
 const getHistory = async () => {
     try{
-        return await contract.getAllBets()
-        
-        console.log(result, "-->")
+        return await contract.getAllBets();
     }catch (error){
         console.log("Error in contract integration", error);
     }
