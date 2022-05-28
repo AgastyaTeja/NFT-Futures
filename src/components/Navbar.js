@@ -70,17 +70,18 @@ const NavbarComp = () =>{
         <Navbar.Brand href="#home">NFT-Futures</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
+
+          <Nav className="me-auto d-flex align-items-center mt-3">
+            <Nav.Link href="/upcomingbets">{<p style={{fontSize: '150px !important' }}> Upcoming Bets </p>}</Nav.Link>
+            <Nav.Link href="/history">{<p style={{fontSize: '150px !important' }}>History</p>}</Nav.Link>
+          </Nav>  
           {
             !account && (          
               <Nav>
               {/* <Nav.Link href="/login">Login</Nav.Link> */}
               <button onClick={connect}>Connect Wallet</button>  
               </Nav>)
-          }
-          <Nav className="me-auto">
-            <Nav.Link href="/upcomingbets">{account && <p> Upcoming Bets </p>}</Nav.Link>
-            <Nav.Link href="/history">{account && <p>History</p>}</Nav.Link>
-          </Nav>                   
+          }                 
           {
             account && <p className={accountInfo}>{account}</p> && (          
               <Nav>

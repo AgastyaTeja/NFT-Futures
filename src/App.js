@@ -5,6 +5,7 @@ import Login from './components/Login';
 import History from './components/History';
 import UpcomingBets from './components/UpcomingBets';
 import Bet from './components/Bet';
+import Home from './components/homePage'
 
 import {BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -14,6 +15,7 @@ function App() {
         <Router>
           <NavbarComp />
           <Routes>
+              <Route path="/" element={<Home /> } />
               <Route path="/login" element={<Login />} />
               <Route path="/history" element={<History />} />
               <Route path="/upcomingbets" element={<UpcomingBets url={"upcomingBets"}/>} />
