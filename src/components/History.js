@@ -5,6 +5,7 @@ import bayc from "../Assets/bayc.png";
 import doodles from "../Assets/doodles.jpg";
 import { useNavigate } from "react-router-dom";
 import { getHistory } from "./Utils";
+/* global BigInt */
 
 const History = () => {
   const [history, setHistory] = useState([]);
@@ -29,35 +30,24 @@ const History = () => {
             <tr>
               <th>#</th>
               <th>NFT set</th>
-              <th>Floor Price</th>
-              <th>Volume</th>
-              <th>Unique Users</th>
-              <th>Total Bets</th>
+              <th>Closing Value</th>
+              <th>Status</th>
+              <th>Start Time</th>
+              <th>Winner</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>
-                {" "}
-                <img src={punk} style={{ height: "100px", width: "100px" }} />
-              </td>
-              <td>CrytoPunks</td>
-              <td>50 eth</td>
-              <td>908.1k eth</td>
-              <td>5.2k</td>
-              <td>3</td>
-            </tr>
             {history.map((bet) => (
               <tr>
                 <td>
                   {" "}
                   <img src={punk} style={{ height: "100px", width: "100px" }} />
                 </td>
-                <td>{bet[1]}</td>
-                <td>{bet[3]['_hex']}</td>
-                <td>908.1k eth</td>
-                <td>5.2k</td>
-                <td>bet[3]</td>
+                <td>{bet.nftCollection}</td>
+                <td>{parseInt(bet.closingPropertyValue._hex, 16)}</td>
+                <td>{bet.status === 2 ? "Completed" : "Open"}</td>
+                <td>{bet.status === 2 ? "Completed" : "Open"}</td>
+                <td>{bet.winner}</td>
               </tr>
             ))}
           </tbody>

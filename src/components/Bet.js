@@ -9,7 +9,7 @@ import  Contract  from '../NFTFuturesBetting.json';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const address = '0x4aad781F93B03cA3681411F44b39A6BAF423F9F1';
+const address = "0x9213eD6E298037B077A17A0d50F53366B3c9E7Df";
 const contract = new ethers.Contract(address, Contract.abi, signer);
 
 
@@ -108,12 +108,12 @@ const Bet = (props) =>{
                             </Form.Group>
                         </fieldset>
                         <div style={{display: "flex", alignItems:"center", justifyContent: "center"}}>
-                                <Button type="submit" onClick={handleSubmit}>Submit</Button> 
+                                <Button type="submit" onClick={handleSubmit}>Submit</Button>
                         </div>
                         {
                             status?<p style={{textAlign: "center"}} className="text-success mt-2">Bid placed Successfully !</p>:null
                         }
-                        
+
                     </Form>
                 </div>
             </div>
