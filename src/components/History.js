@@ -13,10 +13,37 @@ const History = () => {
   useEffect(() => {
           const getData = async () => {
             const data = await getHistory();
-            setHistory(data);
+            setHistory([...data].reverse());
           };
           getData();
   }, []);
+
+  function timeConverter(UNIX_timestamp) {
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var sec = a.getSeconds();
+    var time =
+      date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
+    return time;
+  }
 
   return (
     <div>
@@ -32,6 +59,8 @@ const History = () => {
               <th>NFT set</th>
               <th>Closing Value</th>
               <th>Status</th>
+              <th>User 1</th>
+              <th>User 2</th>
               <th>Start Time</th>
               <th>Winner</th>
             </tr>
@@ -46,7 +75,9 @@ const History = () => {
                 <td>{bet.nftCollection}</td>
                 <td>{parseInt(bet.closingPropertyValue._hex, 16)}</td>
                 <td>{bet.status === 2 ? "Completed" : "Open"}</td>
-                <td>{bet.status === 2 ? "Completed" : "Open"}</td>
+                <td>{bet.userBid1.user}</td>
+                <td>{bet.userBid2.user}</td>
+                <td>{timeConverter(parseInt(bet.startTime))}</td>
                 <td>{bet.winner}</td>
               </tr>
             ))}
