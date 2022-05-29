@@ -29,10 +29,10 @@ const UpcomingBets = (props) => {
                             <tr>
                                 <td> <img src={punk} style={{height: "100px", width: "100px"}}/></td>
                                 <td>Opensea Creatures</td>
-                                <td>50 eth</td>
+                                <td>10 eth</td>
                                 <td>908.1k eth</td>
                                 <td>5.2k</td>
-                                <td>3</td>
+                                <td>1</td>
                                 <td><Button variant="secondary" className='align-middle' onClick={event =>  window.location.href='/betPunks'}>Place a bet</Button>{' '}</td>
                             </tr>
                             <tr>
@@ -41,7 +41,7 @@ const UpcomingBets = (props) => {
                                 <td>50 eth</td>
                                 <td>908.1k eth</td>
                                 <td>5.2k</td>
-                                <td>3</td>
+                                <td>1</td>
                                 <td><Button variant="secondary" className='align-middle' onClick={event =>  window.location.href='/betBAYC'}>Place a bet</Button>{' '}</td>
                             </tr>
                             <tr>
@@ -50,7 +50,7 @@ const UpcomingBets = (props) => {
                                 <td>50 eth</td>
                                 <td>908.1k eth</td>
                                 <td>5.2k</td>
-                                <td>3</td>
+                                <td>1</td>
                                 <td> <Button variant="secondary" className='align-middle'  onClick={event =>  window.location.href='/betDoodles'}>Place a bet</Button>{' '}</td>
                             </tr>
                         </tbody>

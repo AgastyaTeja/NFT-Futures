@@ -193,13 +193,13 @@ contract NFTFuturesBetting is ChainlinkClient {
     }
 
     function placeABid(string calldata nftCollection, string calldata property, uint prediction) public payable {
-        
+
         Bid memory bid = Bid({
             user: msg.sender,
             prediction: prediction
         });
         Bet memory bet = _getBet(nftCollection, property, bid);
-        
+
         console.log(bet.userBid1.user, bet.userBid2.user, bet.nftCollection, bet.property);
 
         // tansfer money to contract address
@@ -216,7 +216,7 @@ contract NFTFuturesBetting is ChainlinkClient {
             console.log(bet.userBid1.user, bet.userBid2.user, bet.nftCollection, bet.property);
             _runBet(bet);
             // _runBetOnlyForTesting(); //Note: Introduced for testing
-        }        
+        }
         console.log("Place a bid start for user:", msg.sender, ",", string(abi.encodePacked(nftCollection, property, prediction)));
     }
 
@@ -225,7 +225,7 @@ contract NFTFuturesBetting is ChainlinkClient {
         bytes32 reqId = _requestCollectionProperty(bet.nftCollection, bet.property);
         // result.push( "after chainlink call";
         console.log("Request ID, betId", bet.betId, string(abi.encodePacked(reqId)));
-        chainlinkReqToBetId[reqId] = bet.betId;       
+        chainlinkReqToBetId[reqId] = bet.betId;
     }
 
     // Note: Introduced for testing
@@ -248,13 +248,13 @@ contract NFTFuturesBetting is ChainlinkClient {
         } else {
             bet.winner = bet.userBid2.user;
         }
-        
+
         console.log(bet.winner, bet.closingPropertyValue, prediction1, prediction2);
         (bool success,) = payable(address(bet.winner)).call{value: 2*minEthBalRequired}("");
         console.log("Sent money to winner", bet.winner);
         if (success) {
             bet.status = BetStatus.COMPLETED;
-            
+
         } else {
            bet.status = BetStatus.FAILED;
         }
@@ -279,7 +279,7 @@ contract NFTFuturesBetting is ChainlinkClient {
         // console.log("Timesamout",string(timesAmount));
 
         // Sends the request
-        
+
         return sendChainlinkRequest(req, fee);
     }
 
@@ -315,11 +315,11 @@ contract NFTFuturesBetting is ChainlinkClient {
         result.push( "sent money to winner");
         if (success) {
             bet.status = BetStatus.COMPLETED;
-            
+
         } else {
            bet.status = BetStatus.FAILED;
         }
-        console.log("Bet status",string(abi.encodePacked(bet.status)));        
+        console.log("Bet status",string(abi.encodePacked(bet.status)));
         result.push( "fulfill end");
     }
 
@@ -337,7 +337,7 @@ contract NFTFuturesBetting is ChainlinkClient {
     }
 
     function onGoingBets() public view returns(Bet[] memory) {
-        uint n = betIds.length;      
+        uint n = betIds.length;
         Bet[] memory _ongoingBets = new Bet[](n);
         uint index;
 

@@ -15,7 +15,7 @@ const contract = new ethers.Contract(address, Contract.abi, signer);
 
 const Bet = (props) =>{
 
-    const [form, setForm] = useState({"fee":'0.1',"collection": "opensea-creature", "bettingOn": "floor_price"})
+    const [form, setForm] = useState({"fee":'0.01',"collection": "opensea-creature", "bettingOn": "floor_price"})
     const [errors, setErrors] = useState({})
     const [status, setStatus] = useState(false)
 
@@ -38,7 +38,7 @@ const Bet = (props) =>{
         try{
             console.log(form, "--")
             let prediction = (form.prediction * 10 **18).toString()
-            await contract.placeABid(form.collection, form.bettingOn, prediction, {value:"100000000000000000"})
+            await contract.placeABid(form.collection, form.bettingOn, prediction, {value:"10000000000000000"})
             console.log("Placed a bid")
             setStatus(true)
 
@@ -105,7 +105,7 @@ const Bet = (props) =>{
                         <fieldset disabled>
                             <Form.Group className="mb-3">
                             <Form.Label htmlFor="disabledTextInput">Bid Amount</Form.Label>
-                            <Form.Control id="disabledTextInput" placeholder="0.1 ETH" />
+                            <Form.Control id="disabledTextInput" placeholder="0.01 ETH" />
                             </Form.Group>
                         </fieldset>
                         <div style={{display: "flex", alignItems:"center", justifyContent: "center"}}>
