@@ -47,43 +47,39 @@ const History = () => {
 
   return (
     <div>
-      <div className="text-center mt-5">
-        <h4>History</h4>
-      </div>
-      <div></div>
-      <Container>
-        <Table striped>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>NFT set</th>
-              <th>Closing Value</th>
-              <th>Status</th>
-              <th>User 1</th>
-              <th>User 2</th>
-              <th>Start Time</th>
-              <th>Winner</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((bet) => (
-              <tr>
-                <td>
-                  {" "}
-                  <img src={punk} style={{ height: "100px", width: "100px" }} />
-                </td>
-                <td>{bet.nftCollection}</td>
-                <td>{parseInt(bet.closingPropertyValue._hex, 16)}</td>
-                <td>{bet.status === 2 ? "Completed" : "Open"}</td>
-                <td>{bet.userBid1.user}</td>
-                <td>{bet.userBid2.user}</td>
-                <td>{timeConverter(parseInt(bet.startTime))}</td>
-                <td>{bet.winner}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Container>
+        <Container>
+            <Table striped responsive="md">
+            <thead>
+                <tr>
+                <th>#</th>
+                <th>NFT set</th>
+                <th>Closing Value</th>
+                <th>Status</th>
+                <th>User 1</th>
+                <th>User 2</th>
+                <th>Start Time</th>
+                <th>Winner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {history.map((bet) => (
+                <tr>
+                    <td>
+                    {" "}
+                    <img src={punk} style={{ height: "100px", width: "100px" }} />
+                    </td>
+                    <td>{bet.nftCollection}</td>
+                    <td>{parseInt(bet.closingPropertyValue._hex, 16)/10**18}</td>
+                    <td>{bet.status === 2 ? "Completed" : "Open"}</td>
+                    <td className="col-1 text-truncate ">{bet.userBid1.user.substring(0, 7)}...</td>
+                    <td className="col-1 text-truncate">{bet.userBid2.user.substring(0, 7)}...</td>
+                    <td>{timeConverter(parseInt(bet.startTime))}</td>
+                    <td>{bet.winner.substring(0, 7)}...</td>
+                </tr>
+                ))}
+            </tbody>
+            </Table>
+        </Container>
     </div>
   );
 };

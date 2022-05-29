@@ -12,9 +12,6 @@ const UpcomingBets = (props) => {
     return(
         <div>
             <div className='text-center mt-5'>
-                <h4>Ongoing bets</h4>
-            </div>
-            <div>
                 <Container>
                         <Table striped>
                         <thead>

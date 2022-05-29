@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
-
 import { Link,useNavigate } from 'react-router-dom';
-import { Navbar, NavDropdown, Nav, Container } from 'react-bootstrap';
+import { Navbar, NavDropdown, Nav, Container, Button} from 'react-bootstrap';
 import { css } from '@emotion/css'
 import { ethers } from 'ethers'
 import 'easymde/dist/easymde.min.css'
@@ -65,9 +64,9 @@ const NavbarComp = () =>{
 
 
     return(
-        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
         <Container>
-        <Navbar.Brand href="/">NFT-Futures</Navbar.Brand>
+        <Navbar.Brand href="/">NFT Futures</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
 
@@ -79,14 +78,14 @@ const NavbarComp = () =>{
             !account && (          
               <Nav>
               {/* <Nav.Link href="/login">Login</Nav.Link> */}
-              <button onClick={connect}>Connect Wallet</button>  
+              <Button onClick={connect} variant="secondary">Connect Wallet</Button>  
               </Nav>)
           }                 
           {
             account && <p className={accountInfo}>{account}</p> && (          
               <Nav>
               {/* <Nav.Link href="/login">Login</Nav.Link> */}
-              <button onClick={disconnect}>Disconnect Wallet</button>  
+              <Button onClick={disconnect} variant="secondary">Disconnect Wallet</Button>  
               </Nav>)
           }   
                

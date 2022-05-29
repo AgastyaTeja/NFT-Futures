@@ -8,8 +8,7 @@ const Home = () => {
     return(
         <div>
             <div style={{marginTop: "25px"}}>
-                 <h3 style={{textAlign: "center"}}>NFT Futures</h3>
-                 <p style={{textAlign: "center"}}> P2P way to spectulate on NFT prices!</p>
+                 
                 {/* <div>
                 <ul>Login via Metamask</ul>
                  <ul>Register for a bet</ul>
@@ -20,8 +19,9 @@ const Home = () => {
             <div style={{marginTop: "150px"}}>
                 <div>
                     <h3 style={{textAlign: "center"}}>How it works?</h3>
+                    <p style={{textAlign: "center"}}> P2P way to spectulate on NFT prices!</p>
                 </div>
-                <div className='d-flex justify-content-center' style={{marginTop: "25px"}}>
+                <div className='d-flex justify-content-center' style={{marginTop: "30px"}}>
 
                     <div style={{width: "150px", height: "150px"}}>
                         {/* {Make a trade} */}

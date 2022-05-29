@@ -36,8 +36,9 @@ const Bet = (props) =>{
 
     const main = async (form) => {
         try{
-            console.log(form, "--");
-            await contract.placeABid(form.collection, form.bettingOn, form.prediction, {value:"100000000000000000"})
+            console.log(form, "--")
+            let prediction = (form.prediction * 10 **18).toString()
+            await contract.placeABid(form.collection, form.bettingOn, prediction, {value:"100000000000000000"})
             console.log("Placed a bid")
             setStatus(true)
 
