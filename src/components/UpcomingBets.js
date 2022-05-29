@@ -28,7 +28,7 @@ const UpcomingBets = (props) => {
                         <tbody>
                             <tr>
                                 <td> <img src={punk} style={{height: "100px", width: "100px"}}/></td>
-                                <td>CrytoPunks</td>
+                                <td>Opensea Creatures</td>
                                 <td>50 eth</td>
                                 <td>908.1k eth</td>
                                 <td>5.2k</td>
