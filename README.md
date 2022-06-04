@@ -1,42 +1,24 @@
-# Advanced Sample Hardhat Project
+# NFT Futures betting
+## IDEA
+<p align="justify"> NFT Futures betting is a decentralized application where two users can bet on the future price of NFTs. Results will be published within one hour after each wager is made. The rewards from the betting get credited to the winners wallet. </p>
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+## PROBLEM
+<p align="justify">In a Web 2.0 world, future bettings are controlled by a centralized betting authority or an organization. A corrupt organization can lead to loss of assets. It is difficult to establish trust in these companies and the payment gateways they use.  Know Your Customer (KYC) check is used by the existing betting companies to identify and verify the client's identity when opening an account and periodically over time. The anonymity of the user is lost. Using the power of blockchain, we hope to remove centralized authority and replace it with smart contracts. Users are completely anonymous in our dApp and no personal identifiable information will be collected or stored. </p>
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+<p align="justify">2021 has seen the rise of NFTs as an asset class. They brought a lot of excitement and enthusiasm in the cryptospace. Opensea, one of the leading NFT marketplaces, even saw trading volume cross over 450 million dollars in a single day. The Opensea trading volume declined since then correlating to the overall macroeconomic conditions. A lot of NFT sets floor prices crumbled in the recent slump. This shows that NFTs as an asset class is still in its nascent phase. NFT Futures is a fun way of speculating on NFTs without holding any NFT. We believe once the market matures more people would be speculating on the prices of these assets.  </p>
 
-Try running some of the following tasks:
+![alt text](https://github.com/AgastyaTeja/NFT-Futures/blob/main/public/NFT-futures%20Betting%20White%20Paper.jpg)
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.js
-node scripts/deploy.js
-npx eslint '**/*.js'
-npx eslint '**/*.js' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
 
-# Etherscan verification
-
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
-
-```shell
-hardhat run --network ropsten scripts/deploy.js
-```
-
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
+## CORE FEATURES AND FUNCTIONALITIES
+1. User Authentication
+  - Our dApp users need to have Metamask inorder to login and participate in NFT betting. On successful authentication, users will be redirected to our betting home page.
+2. Betting on NFT sets
+  - Betting is open to users for 10 min after every 1 hour of wait time. During the 1 hour of the wait time users are not allowed to bet and change their bets. 
+  - User predicts the closet floor price of an NFT set in the next hour. 
+  - Users can place multiple bets within 10 min across multiple NFT sets or the same Set. 
+  - Each Bet cost 0.1 eth for the user.
+  - If only one user placed a bet then the user gets the fund returned to their wallet after the betting window closes.
+3. History of Bets
+  - List all the on-going bets of the user.
+  - List past bets the user participated in with the details of the bet and winner. 
