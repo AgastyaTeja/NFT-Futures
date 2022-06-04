@@ -7,8 +7,9 @@
 
 <p align="justify">2021 has seen the rise of NFTs as an asset class. They brought a lot of excitement and enthusiasm in the cryptospace. Opensea, one of the leading NFT marketplaces, even saw trading volume cross over 450 million dollars in a single day. The Opensea trading volume declined since then correlating to the overall macroeconomic conditions. A lot of NFT sets floor prices crumbled in the recent slump. This shows that NFTs as an asset class is still in its nascent phase. NFT Futures is a fun way of speculating on NFTs without holding any NFT. We believe once the market matures more people would be speculating on the prices of these assets.  </p>
 
-![alt text](https://github.com/AgastyaTeja/NFT-Futures/blob/main/public/NFT-futures%20Betting%20White%20Paper.jpg)
+<!-- ![Architecture Diagram](https://github.com/AgastyaTeja/NFT-Futures/blob/main/public/NFT-futures%20Betting%20White%20Paper.jpg) -->
 
+![Architecture Diagram](https://github.com/AgastyaTeja/NFT-Futures/blob/main/public/NFT-futures%20Betting%20White%20Paper.jpg)
 
 ## CORE FEATURES AND FUNCTIONALITIES
 1. User Authentication
